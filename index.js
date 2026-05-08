@@ -8,6 +8,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const axios = require('axios');
 const https = require('https');
+const AdmZip = require('adm-zip');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -52,7 +53,7 @@ const bgStorage = multer.diskStorage({
 const uploadBg = multer({ storage: bgStorage });
 
 // Conexión a la base de datos de Heimdall
-const db = new Database(path.resolve(__dirname, process.env.DB_PATH || ''));
+let db = new Database(path.resolve(__dirname, process.env.DB_PATH || ''));
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -151,6 +152,52 @@ app.get('/check-status', async (req, res) => {
         res.json({ status: 'online' });
     } catch (error) {
         res.json({ status: 'offline' });
+    }
+});
+
+// Exportar configuración completa (ZIP)
+app.get('/export', (req, res) => {
+    const zip = new AdmZip();
+    const dbFile = path.resolve(__dirname, process.env.DB_PATH);
+    const iconsDir = path.resolve(__dirname, 'public/icons');
+    const bgDir = path.resolve(__dirname, 'public/backgrounds');
+
+    if (fs.existsSync(dbFile)) zip.addLocalFile(dbFile);
+    if (fs.existsSync(iconsDir)) zip.addLocalFolder(iconsDir, 'icons');
+    if (fs.existsSync(bgDir)) zip.addLocalFolder(bgDir, 'backgrounds');
+
+    const fileName = `SimpleDashboard_Backup_${new Date().toISOString().split('T')[0]}.zip`;
+    const buffer = zip.toBuffer();
+
+    res.set('Content-Type', 'application/octet-stream');
+    res.set('Content-Disposition', `attachment; filename=${fileName}`);
+    res.set('Content-Length', buffer.length);
+    res.send(buffer);
+});
+
+// Importar configuración (ZIP)
+app.post('/import', upload.single('importFile'), (req, res) => {
+    if (!req.file) return res.status(400).send('No se subió ningún archivo');
+
+    try {
+        const zip = new AdmZip(req.file.path);
+        const targetPath = path.resolve(__dirname, 'public');
+
+        // Cerrar BD temporalmente para reemplazar el archivo
+        db.close();
+
+        zip.extractAllTo(targetPath, true);
+
+        // Volver a abrir la conexión
+        db = new Database(path.resolve(__dirname, process.env.DB_PATH || ''));
+        
+        // Eliminar el archivo temporal subido
+        fs.unlinkSync(req.file.path);
+
+        res.redirect('/edit?imported=true');
+    } catch (error) {
+        console.error('Error en importación:', error);
+        res.status(500).send('Error al procesar el archivo de respaldo');
     }
 });
 

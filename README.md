@@ -11,6 +11,7 @@ Un tablero de control minimalista, rápido y elegante para tus servicios locales
 - 🖼️ **Interfaz Elegante:** Fondo dinámico y tarjetas con desenfoque de fondo (backdrop-filter).
 - 🟢 **Monitoreo en Vivo:** Indicadores de estado (Health Check) para saber si tus servicios están online.
 - 🎨 **Fondos Personalizados:** Sube y gestiona tus propias imágenes de fondo desde el panel de ajustes.
+- 💾 **Respaldo Total:** Exporta e importa toda tu configuración (BD, iconos y fondos) en un solo archivo ZIP.
 - 📱 **Diseño Responsivo:** Adaptado para múltiples dispositivos con una cuadrícula densa y limpia.
 - 🗂️ **Orden Alfabético:** Tus aplicaciones se organizan automáticamente de la A a la Z.
 - 🌓 **Modo Oscuro/Claro:** Selector de tema con persistencia automática.

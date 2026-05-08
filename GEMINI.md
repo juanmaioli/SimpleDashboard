@@ -46,7 +46,8 @@ El proyecto requiere las siguientes variables configuradas:
 - **Estilo de Código:** CommonJS (`require`).
 - **UI/UX:** Uso intensivo de clases de Bootstrap 5.3 y personalización CSS para efectos de transparencia (Glassmorphism). Se respeta la personalización de densidad de la cuadrícula realizada por el usuario.
 - **Base de Datos:** Consultas mediante `better-sqlite3`. Las aplicaciones se muestran en orden alfabético (`ORDER BY title ASC`). Persistencia de configuración en la tabla `settings`.
-- **Salud del Sistema:** Monitoreo mediante `axios` con soporte para HTTPS local (agente permisivo).
+- **Salud del Sistema:** Monitoreo mediante `axios` con soporte para HTTPS local.
+- **Portabilidad:** Sistema de exportación/importación de configuración completa mediante archivos ZIP (`adm-zip`).
 - **Idioma:** Todo el código fuente, comentarios y documentación interna deben mantenerse en español (es_AR) según las preferencias del usuario.
 
 ## 📌 TODO / Próximos Pasos

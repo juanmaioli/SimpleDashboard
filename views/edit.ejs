@@ -134,6 +134,36 @@
         </div>
       </div>
 
+      <!-- Sección de Respaldo -->
+      <div class="col-12">
+        <div class="card glass-card shadow-sm border-0 text-white">
+          <div class="card-body">
+            <h4 class="card-title mb-4">💾 Respaldo de Configuración</h4>
+            <div class="row g-4">
+              <!-- Exportar -->
+              <div class="col-md-6">
+                <h6>Exportar Datos</h6>
+                <p class="small text-white-50">Descarga un archivo ZIP con tu base de datos, iconos y fondos.</p>
+                <a href="/export" class="btn btn-primary">📥 Descargar Respaldo (.zip)</a>
+              </div>
+              
+              <!-- Importar -->
+              <div class="col-md-6">
+                <h6>Importar Datos</h6>
+                <p class="small text-white-50">Sube un archivo de respaldo previo para restaurar toda tu configuración.</p>
+                <form action="/import" method="POST" enctype="multipart/form-data" class="d-flex gap-2">
+                  <input type="file" name="importFile" class="form-control bg-dark text-white border-secondary" accept=".zip" required>
+                  <button type="submit" class="btn btn-warning" onclick="return confirm('ATENCIÓN: Esto reemplazará toda tu configuración actual. ¿Deseas continuar?')">📤 Importar</button>
+                </form>
+              </div>
+            </div>
+            <div id="importAlert" class="alert alert-success mt-3 py-2 small border-0 bg-success bg-opacity-25 text-white d-none">
+              ✅ Configuración restaurada con éxito.
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="col-12">
         <div class="card glass-card shadow-sm border-0 text-white">
           <div class="card-body">
@@ -185,6 +215,15 @@
     // Cargar tema guardado
     const savedTheme = localStorage.getItem('theme') || 'dark';
     htmlElement.setAttribute('data-bs-theme', savedTheme);
+    
+    // Mostrar alerta de importación si corresponde
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('imported')) {
+      const alert = document.getElementById('importAlert');
+      if (alert) alert.classList.remove('d-none');
+      // Limpiar URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
     
     if (themeSwitcher && themeLabel) {
       themeSwitcher.checked = savedTheme === 'dark';
