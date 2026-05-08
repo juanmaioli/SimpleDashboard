@@ -34,6 +34,23 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// Configuración de multer para fondos de pantalla
+const bgStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = path.resolve(__dirname, 'public/backgrounds');
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        const hash = crypto.createHash('sha256').update(file.originalname).digest('hex');
+        cb(null, `bg_${hash}${ext}`);
+    }
+});
+const uploadBg = multer({ storage: bgStorage });
+
 // Conexión a la base de datos de Heimdall
 const db = new Database(path.resolve(__dirname, process.env.DB_PATH || ''));
 
@@ -49,7 +66,9 @@ app.use('/backgrounds', express.static(path.resolve(__dirname, process.env.BACKG
 app.get('/', (req, res) => {
     try {
         const items = db.prepare('SELECT * FROM items ORDER BY title ASC').all();
-        const backgroundUrl = process.env.BACKGROUND_URL;
+        // Obtener fondo de la base de datos si existe, sino usar el del .env
+        const bgSetting = db.prepare("SELECT value FROM settings WHERE key = 'background_image'").get();
+        const backgroundUrl = bgSetting && bgSetting.value ? `/backgrounds/${bgSetting.value}` : process.env.BACKGROUND_URL;
         res.render('index', { items, backgroundUrl });
     } catch (err) {
         console.error(err);
@@ -60,9 +79,32 @@ app.get('/', (req, res) => {
 // Ruta de Edición: Listar ítems para editar
 app.get('/edit', (req, res) => {
     const items = db.prepare('SELECT * FROM items ORDER BY title').all();
-    const backgroundUrl = process.env.BACKGROUND_URL;
-    res.render('edit', { items, backgroundUrl });
-    // res.render('edit', { items });
+    const bgSetting = db.prepare("SELECT value FROM settings WHERE key = 'background_image'").get();
+    const backgroundUrl = bgSetting && bgSetting.value ? `/backgrounds/${bgSetting.value}` : process.env.BACKGROUND_URL;
+    
+    // Listar fondos disponibles
+    const bgDir = path.resolve(__dirname, 'public/backgrounds');
+    let availableBackgrounds = [];
+    if (fs.existsSync(bgDir)) {
+        availableBackgrounds = fs.readdirSync(bgDir).filter(f => f.startsWith('bg_'));
+    }
+    
+    res.render('edit', { items, backgroundUrl, availableBackgrounds });
+});
+
+// Cambiar fondo de pantalla
+app.post('/set-background', (req, res) => {
+    const { background } = req.body;
+    db.prepare("UPDATE settings SET value = ? WHERE key = 'background_image'").run(background);
+    res.redirect('/edit');
+});
+
+// Subir nuevo fondo de pantalla
+app.post('/upload-background', uploadBg.single('bgFile'), (req, res) => {
+    if (req.file) {
+        db.prepare("UPDATE settings SET value = ? WHERE key = 'background_image'").run(req.file.filename);
+    }
+    res.redirect('/edit');
 });
 
 // Procesar edición (Ejemplo simple)

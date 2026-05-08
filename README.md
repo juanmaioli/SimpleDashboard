@@ -9,10 +9,12 @@ Un tablero de control minimalista, rápido y elegante para tus servicios locales
 ## ✨ Características
 
 - 🖼️ **Interfaz Elegante:** Fondo dinámico y tarjetas con desenfoque de fondo (backdrop-filter).
+- 🟢 **Monitoreo en Vivo:** Indicadores de estado (Health Check) para saber si tus servicios están online.
+- 🎨 **Fondos Personalizados:** Sube y gestiona tus propias imágenes de fondo desde el panel de ajustes.
 - 📱 **Diseño Responsivo:** Adaptado para múltiples dispositivos con una cuadrícula densa y limpia.
 - 🗂️ **Orden Alfabético:** Tus aplicaciones se organizan automáticamente de la A a la Z.
-- ⚙️ **Gestión Simple:** Edita nombres y URLs directamente desde el panel de ajustes.
-- 🚀 **Ligero:** Basado en Node.js y SQLite para un consumo mínimo de recursos.
+- 🌓 **Modo Oscuro/Claro:** Selector de tema con persistencia automática.
+- ⚙️ **Gestión Simple:** Interfaz intuitiva con botones flotantes para una navegación fluida.
 
 ## 🛠️ Instalación
 

@@ -45,14 +45,12 @@ El proyecto requiere las siguientes variables configuradas:
 ## 📜 Convenciones de Desarrollo
 - **Estilo de Código:** CommonJS (`require`).
 - **UI/UX:** Uso intensivo de clases de Bootstrap 5.3 y personalización CSS para efectos de transparencia (Glassmorphism). Se respeta la personalización de densidad de la cuadrícula realizada por el usuario.
-- **Base de Datos:** Consultas mediante `better-sqlite3`. Las aplicaciones se muestran en orden alfabético (`ORDER BY title ASC`).
+- **Base de Datos:** Consultas mediante `better-sqlite3`. Las aplicaciones se muestran en orden alfabético (`ORDER BY title ASC`). Persistencia de configuración en la tabla `settings`.
+- **Salud del Sistema:** Monitoreo mediante `axios` con soporte para HTTPS local (agente permisivo).
 - **Idioma:** Todo el código fuente, comentarios y documentación interna deben mantenerse en español (es_AR) según las preferencias del usuario.
 
 ## 📌 TODO / Próximos Pasos
-- [ ] Implementar sistema de borrado de aplicaciones.
-- [ ] Añadir funcionalidad para subir nuevos iconos desde la interfaz de edición.
+- [ ] Implementar sistema de categorías o grupos.
+- [ ] Añadir una barra de búsqueda rápida.
 - [ ] Implementar validación de formularios en el backend.
 - [ ] Añadir una suite de pruebas básicas.
-
-4. 🖼️ Gestión de Fondos de Pantalla
-8. 💾 Exportar/Importar Configuración

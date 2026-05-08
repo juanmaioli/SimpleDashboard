@@ -1,6 +1,6 @@
 {
   "name": "simpledashboard",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Tablero de control minimalista con monitoreo de estado",
   "main": "index.js",
   "scripts": {

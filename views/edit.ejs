@@ -84,35 +84,90 @@
   </nav>
 
   <div class="container">
-    <div class="row row-cols-1 g-3">
-      <% items.forEach(item=> { %>
-        <div class="col">
-          <div class="card shadow-sm border-0">
-            <div class="card-body">
-              <form action="/edit/<%= item.id %>" method="POST" class="row g-3 align-items-center">
-                  <div class="col-md-1">
-                  <label class="form-label">Icono</label>
-                  <img src="/<%= item.icon %>" width="100" height="100" alt="<%= item.title %>" class="icon-img">
+    <div class="row g-4 mb-5">
+      <!-- Sección de Fondo de Pantalla -->
+      <div class="col-12">
+        <div class="card glass-card shadow-sm border-0 text-white">
+          <div class="card-body">
+            <h4 class="card-title mb-4">🖼️ Gestión de Fondo de Pantalla</h4>
+            <div class="row g-4">
+              <!-- Subir Nuevo Fondo -->
+              <div class="col-md-6">
+                <h6>Subir Nuevo Fondo</h6>
+                <form action="/upload-background" method="POST" enctype="multipart/form-data" class="d-flex gap-2">
+                  <input type="file" name="bgFile" class="form-control bg-dark text-white border-secondary" accept="image/*" required>
+                  <button type="submit" class="btn btn-primary">📤 Subir</button>
+                </form>
+              </div>
+              
+              <!-- Seleccionar Fondo Existente -->
+              <div class="col-md-6">
+                <h6>Seleccionar Fondo</h6>
+                <form action="/set-background" method="POST" class="d-flex gap-2">
+                  <select name="background" class="form-select bg-dark text-white border-secondary">
+                    <option value="">Por defecto (.env)</option>
+                    <% availableBackgrounds.forEach(bg => { %>
+                      <option value="<%= bg %>" <%= backgroundUrl.includes(bg) ? 'selected' : '' %>><%= bg.replace('bg_', '') %></option>
+                    <% }); %>
+                  </select>
+                  <button type="submit" class="btn btn-success">✅ Aplicar</button>
+                </form>
+              </div>
+            </div>
+            
+            <!-- Vista Previa de Fondos -->
+            <% if (availableBackgrounds.length > 0) { %>
+              <div class="mt-4">
+                <h6>Galería de Fondos</h6>
+                <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-2">
+                  <% availableBackgrounds.forEach(bg => { %>
+                    <div class="col">
+                      <div class="position-relative">
+                        <img src="/backgrounds/<%= bg %>" class="img-thumbnail bg-dark border-secondary p-0" style="height: 80px; width: 100%; object-fit: cover; cursor: pointer;" onclick="document.getElementsByName('background')[0].value='<%= bg %>'">
+                      </div>
+                    </div>
+                  <% }); %>
                 </div>
-                <div class="col-md-4">
-                  <label class="form-label">Nombre</label>
-                  <input type="text" name="title" class="form-control" value="<%= item.title %>" required>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="card glass-card shadow-sm border-0 text-white">
+          <div class="card-body">
+            <h4 class="card-title mb-4">⚙️ Gestión de Aplicaciones</h4>
+            <div class="row row-cols-1 g-3">
+              <% items.forEach(item=> { %>
+                <div class="col">
+                  <div class="card bg-dark bg-opacity-25 border-secondary border-opacity-25 shadow-none">
+                    <div class="card-body p-2">
+                      <form action="/edit/<%= item.id %>" method="POST" class="row g-2 align-items-center">
+                        <div class="col-md-1 text-center">
+                          <img src="/<%= item.icon %>" width="60" height="60" alt="<%= item.title %>" class="icon-img rounded">
+                        </div>
+                        <div class="col-md-4">
+                          <input type="text" name="title" class="form-control bg-dark text-white border-secondary" value="<%= item.title %>" required>
+                        </div>
+                        <div class="col-md-5">
+                          <input type="url" name="url" class="form-control bg-dark text-white border-secondary" value="<%= item.url %>" required>
+                        </div>
+                        <div class="col-md-1 text-center">
+                          <button type="submit" formaction="/delete/<%= item.id %>" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta aplicación?')">🗑️</button>
+                        </div>
+                        <div class="col-md-1 text-center">
+                          <button type="submit" class="btn btn-primary btn-sm">💾</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
-                <div class="col-md-5">
-                  <label class="form-label">URL</label>
-                  <input type="url" name="url" class="form-control" value="<%= item.url %>" required>
-                </div>
-                <div class="col-md-1 text-center">
-                  <button type="submit" formaction="/delete/<%= item.id %>" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta aplicación?')">🗑️</button>
-                </div>
-                <div class="col-md-1 text-center">
-                  <button type="submit" class="btn btn-primary">💾</button>
-                </div>
-              </form>
+              <% }); %>
             </div>
           </div>
         </div>
-        <% }); %>
+      </div>
     </div>
   </div>
 
