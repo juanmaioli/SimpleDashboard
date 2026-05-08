@@ -1,0 +1,16 @@
+services:
+  simpledashboard:
+    build: .
+    container_name: simpledashboard
+    restart: unless-stopped
+    ports:
+      - "8064:8064"
+    volumes:
+      - ./public/icons:/app/public/icons
+      - ./public/backgrounds:/app/public/backgrounds
+      - ./public/db:/app/public/db
+      - .env:/app/.env
+      - ./.dev:/app/.dev
+    environment:
+      - NODE_ENV=production
+      - PORT=8064

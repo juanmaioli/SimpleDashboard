@@ -1,0 +1,12 @@
+node_modules
+.git
+.env
+package-lock.json
+public/db/app.sqlite
+public/icons/*
+public/backgrounds/bg_*
+Dockerfile
+compose.yml
+GEMINI.md
+README.md
+pnpm-lock.yaml

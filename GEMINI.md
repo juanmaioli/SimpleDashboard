@@ -28,7 +28,8 @@ El proyecto requiere las siguientes variables configuradas:
 | :--- | :--- |
 | Instalar dependencias | `pnpm install` |
 | Iniciar aplicación | `node index.js` |
-| Iniciar en desarrollo | `npx nodemon index.js` (si está instalado) |
+| Levantar con Docker | `docker compose up -d` |
+| Construir imagen | `docker build -t simpledashboard .` |
 
 > **Nota:** No se han detectado scripts de prueba en el `package.json` más allá del placeholder por defecto.
 
@@ -47,6 +48,7 @@ El proyecto requiere las siguientes variables configuradas:
 - **UI/UX:** Uso intensivo de clases de Bootstrap 5.3 y personalización CSS para efectos de transparencia (Glassmorphism). Se respeta la personalización de densidad de la cuadrícula realizada por el usuario.
 - **Base de Datos:** Consultas mediante `better-sqlite3`. Las aplicaciones se muestran en orden alfabético (`ORDER BY title ASC`). Persistencia de configuración en la tabla `settings`.
 - **Salud del Sistema:** Monitoreo mediante `axios` con soporte para HTTPS local.
+- **Seguridad:** Soporte para HTTPS automático si se encuentran certificados en el directorio `./.dev` (`apache.crt` y `apache.key`).
 - **Portabilidad:** Sistema de exportación/importación de configuración completa mediante archivos ZIP (`adm-zip`).
 - **Idioma:** Todo el código fuente, comentarios y documentación interna deben mantenerse en español (es_AR) según las preferencias del usuario.
 

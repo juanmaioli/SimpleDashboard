@@ -13,6 +13,15 @@ const AdmZip = require('adm-zip');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Configuración de servidor HTTPS si existen certificados
+const sslPath = path.resolve(__dirname, '.dev');
+const sslOptions = {
+    key: fs.existsSync(path.join(sslPath, 'apache.key')) ? fs.readFileSync(path.join(sslPath, 'apache.key')) : null,
+    cert: fs.existsSync(path.join(sslPath, 'apache.crt')) ? fs.readFileSync(path.join(sslPath, 'apache.crt')) : null
+};
+
+const isHttps = sslOptions.key && sslOptions.cert;
+
 // Agente HTTPS para ignorar errores de certificados (común en servidores locales)
 const httpsAgent = new https.Agent({
     rejectUnauthorized: false
@@ -201,6 +210,12 @@ app.post('/import', upload.single('importFile'), (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`🚀 SimpleDashboard corriendo en http://localhost:${port}`);
-});
+if (isHttps) {
+    https.createServer(sslOptions, app).listen(port, () => {
+        console.log(`🚀 SimpleDashboard corriendo con HTTPS en https://localhost:${port}`);
+    });
+} else {
+    app.listen(port, () => {
+        console.log(`🚀 SimpleDashboard corriendo en http://localhost:${port}`);
+    });
+}
