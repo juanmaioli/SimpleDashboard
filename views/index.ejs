@@ -12,9 +12,11 @@
   <style>
     body {
       background-image: url('<%= backgroundUrl %>') !important;
-      background-size: cover;
-      background-position: center;
       background-attachment: fixed;
+      background-color: #fff;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: cover;
       min-height: 100vh;
     }
 
@@ -35,28 +37,61 @@
       height: 64px;
       object-fit: contain;
     }
+
+    /* Indicador de estado */
+    .status-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #6c757d; /* Gris inicial (desconocido) */
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      transition: background-color 0.3s;
+    }
+    .status-online { background-color: #28a745; box-shadow: 0 0 8px #28a745; }
+    .status-offline { background-color: #dc3545; box-shadow: 0 0 8px #dc3545; }
+
+    /* Botón flotante de ajustes */
+    .fab-settings {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #0d6efd;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      text-decoration: none;
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 1050;
+    }
+
+    .fab-settings:hover {
+      transform: scale(1.1);
+      background-color: #0b5ed7;
+      color: white;
+    }
   </style>
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 shadow-sm mb-4">
-    <div class="container">
-      <a class="navbar-brand" href="/">⚜️ SimpleDashboard</a>
-      <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/edit">🛠️ Ajustes</a>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container">
+  <div class="container mt-5">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 row-cols-lg-6 g-4">
       <% items.forEach(item=> { %>
         <div class="col">
-          <a href="<%= item.url %>" target="_blank" class="text-decoration-none">
-            <div class="card h-100 glass-card shadow-sm text-white">
+          <a href="<%= item.url %>" target="_blank" class="text-decoration-none app-card" data-url="<%= item.url %>">
+            <div class="card h-100 glass-card shadow-sm text-white position-relative">
+              <div class="status-indicator" title="Verificando estado..."></div>
               <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
                 <% if(item.icon) { %>
-                  <img src="/icons/<%= item.icon %>" class="icon-img mb-3" alt="<%= item.title %>">
+                  <img src="/<%= item.icon %>" class="icon-img mb-3" alt="<%= item.title %>">
                   <% } else { %>
                     <div class="icon-img mb-3 d-flex align-items-center justify-content-center bg-secondary rounded">
                       <span>📦</span>
@@ -70,11 +105,116 @@
           </a>
         </div>
         <% }); %>
+
+          <!-- Tarjeta para agregar nueva aplicación -->
+          <div class="col">
+            <div class="card h-100 glass-card shadow-sm text-white border-primary border-opacity-50" style="cursor: pointer;"
+              data-bs-toggle="modal" data-bs-target="#addAppModal">
+              <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
+                <div class="icon-img mb-3 d-flex align-items-center justify-content-center bg-success rounded-circle">
+                  <span style="font-size: 4rem;">+</span>
+                </div>
+                <h5 class="card-title mb-1 text-truncate w-100">Nueva App</h5>
+              </div>
+            </div>
+          </div>
+    </div>
+  </div>
+
+  <!-- Botón flotante de Ajustes -->
+  <a href="/edit" class="fab-settings" title="Ajustes">
+    ⚙️
+  </a>
+
+  <!-- Modal para nueva aplicación -->
+  <div class="modal fade" id="addAppModal" tabindex="-1" aria-labelledby="addAppModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-card text-white">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="addAppModalLabel">🚀 Agregar Nueva Aplicación</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/add" method="POST" enctype="multipart/form-data">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="title" class="form-label">Nombre de la Aplicación</label>
+              <input type="text" class="form-control bg-dark text-white border-secondary" id="title" name="title" required
+                placeholder="Ej: Google, Netflix...">
+            </div>
+            <div class="mb-3">
+              <label for="url" class="form-label">URL (Enlace)</label>
+              <input type="url" class="form-control bg-dark text-white border-secondary" id="url" name="url" required
+                placeholder="https://...">
+            </div>
+            <div class="mb-3">
+              <label for="iconFile" class="form-label">Subir Icono</label>
+              <input type="file" class="form-control bg-dark text-white border-secondary" id="iconFile" name="iconFile" accept="image/*">
+              <div class="form-text text-white-50 small">El archivo será hasheado y guardado en <code>public/icons</code>.</div>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">➕ Agregar Aplicación</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
   <!-- Bootstrap 5.3 JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const themeSwitcher = document.getElementById('themeSwitcher');
+    const themeLabel = document.getElementById('themeLabel');
+    const htmlElement = document.documentElement;
+
+    // Cargar tema guardado
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    htmlElement.setAttribute('data-bs-theme', savedTheme);
+    
+    if (themeSwitcher && themeLabel) {
+      themeSwitcher.checked = savedTheme === 'dark';
+      themeLabel.innerText = savedTheme === 'dark' ? '🌙' : '☀️';
+
+      themeSwitcher.addEventListener('change', () => {
+        const newTheme = themeSwitcher.checked ? 'dark' : 'light';
+        htmlElement.setAttribute('data-bs-theme', newTheme);
+        themeLabel.innerText = newTheme === 'dark' ? '🌙' : '☀️';
+        localStorage.setItem('theme', newTheme);
+      });
+    }
+
+    // Lógica de Monitoreo de Estado (Health Check)
+    async function checkAppStatus() {
+      const cards = document.querySelectorAll('.app-card');
+      
+      cards.forEach(async (card) => {
+        const url = card.getAttribute('data-url');
+        const indicator = card.querySelector('.status-indicator');
+        
+        try {
+          const response = await fetch(`/check-status?url=${encodeURIComponent(url)}`);
+          const data = await response.json();
+          
+          indicator.classList.remove('status-online', 'status-offline');
+          if (data.status === 'online') {
+            indicator.classList.add('status-online');
+            indicator.title = 'En línea';
+          } else {
+            indicator.classList.add('status-offline');
+            indicator.title = 'Fuera de línea';
+          }
+        } catch (error) {
+          indicator.classList.add('status-offline');
+          indicator.title = 'Error de conexión';
+        }
+      });
+    }
+
+    // Ejecutar al cargar y cada 60 segundos
+    checkAppStatus();
+    setInterval(checkAppStatus, 60000);
+  </script>
 </body>
 
 </html>

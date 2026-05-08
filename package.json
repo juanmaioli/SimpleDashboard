@@ -1,20 +1,22 @@
 {
   "name": "simpledashboard",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "Tablero de control minimalista con monitoreo de estado",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Juan Gabriel Maioli",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "axios": "^1.16.0",
     "better-sqlite3": "^12.9.0",
     "body-parser": "^2.2.2",
     "dotenv": "^17.4.2",
     "ejs": "^5.0.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "multer": "^2.1.1"
   }
 }

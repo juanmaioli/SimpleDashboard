@@ -3,9 +3,36 @@ const express = require('express');
 const Database = require('better-sqlite3');
 const path = require('path');
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const crypto = require('crypto');
+const fs = require('fs');
+const axios = require('axios');
+const https = require('https');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Agente HTTPS para ignorar errores de certificados (común en servidores locales)
+const httpsAgent = new https.Agent({
+    rejectUnauthorized: false
+});
+
+// Configuración de multer para subida de iconos
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = path.resolve(__dirname, 'public/icons');
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        const hash = crypto.createHash('sha256').update(file.originalname).digest('hex');
+        cb(null, `${hash}${ext}`);
+    }
+});
+const upload = multer({ storage });
 
 // Conexión a la base de datos de Heimdall
 const db = new Database(path.resolve(__dirname, process.env.DB_PATH || ''));
@@ -44,6 +71,45 @@ app.post('/edit/:id', (req, res) => {
     const { id } = req.params;
     db.prepare('UPDATE items SET title = ?, url = ? WHERE id = ?').run(title, url, id);
     res.redirect('/');
+});
+
+// Eliminar aplicación
+app.post('/delete/:id', (req, res) => {
+    const { id } = req.params;
+    db.prepare('DELETE FROM items WHERE id = ?').run(id);
+    res.redirect('/edit');
+});
+
+// Agregar nueva aplicación
+app.post('/add', upload.single('iconFile'), (req, res) => {
+    const { title, url } = req.body;
+    let iconPath = null;
+
+    if (req.file) {
+        iconPath = `icons/${req.file.filename}`;
+    }
+
+    db.prepare('INSERT INTO items (title, url, icon) VALUES (?, ?, ?)').run(title, url, iconPath);
+    res.redirect('/');
+});
+
+// API para verificar estado de una aplicación
+app.get('/check-status', async (req, res) => {
+    const { url } = req.query;
+    if (!url) return res.status(400).json({ status: 'offline' });
+
+    try {
+        // Petición rápida con timeout de 3 segundos e ignorando errores de SSL
+        await axios.get(url, { 
+            timeout: 3000, 
+            validateStatus: (status) => status >= 200 && status < 400,
+            headers: { 'User-Agent': 'SimpleDashboard-HealthCheck/1.0' },
+            httpsAgent: httpsAgent
+        });
+        res.json({ status: 'online' });
+    } catch (error) {
+        res.json({ status: 'offline' });
+    }
 });
 
 app.listen(port, () => {
