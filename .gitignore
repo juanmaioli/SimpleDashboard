@@ -2,3 +2,5 @@ uploads/
 processed/
 node_modules/
 .dev/
+GEMINI.md
+.env

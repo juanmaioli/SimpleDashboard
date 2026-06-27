@@ -53,6 +53,18 @@ Un tablero de control minimalista, rápido y elegante para tus servicios locales
 - `views/`: Plantillas EJS para el dashboard y edición.
 - `public/`: Activos estáticos (iconos, fondos y base de datos).
 
+## 🐳 Despliegue con Docker
+
+Para desplegar la aplicación utilizando Docker y Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+El servicio estará disponible en el puerto `443` HTTPS. El contenedor está optimizado con los siguientes límites de recursos:
+- **Límite de CPU:** 10% de un núcleo (`0.10`).
+- **Límite de Memoria:** 256 MB.
+
 ## 👤 Autor
 
 Desarrollado por **Juan Gabriel Maioli**.

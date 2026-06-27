@@ -4,7 +4,12 @@ services:
     container_name: simpledashboard
     restart: unless-stopped
     ports:
-      - "8064:8064"
+      - "443:8064"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: 256M
     volumes:
       - ./public/icons:/app/public/icons
       - ./public/backgrounds:/app/public/backgrounds
